@@ -3,7 +3,9 @@ services:
     build: .
     restart: unless-stopped
     environment:
-      - DATABASE_URL=postgres://armafield:${POSTGRES_PASSWORD:-armafield}@db:5432/armafield
+      # DATABASE_URL from .env takes precedence (for external DB).
+      # Falls back to the local `db` service below if not set.
+      - DATABASE_URL=${DATABASE_URL:-postgres://armafield:${POSTGRES_PASSWORD:-armafield}@db:5432/armafield}
       - AUTH_SECRET=${AUTH_SECRET}
       - STEAM_API_KEY=${STEAM_API_KEY}
       - ARMAFIELD_TEST_MODE=${ARMAFIELD_TEST_MODE:-}
@@ -14,14 +16,19 @@ services:
     depends_on:
       db:
         condition: service_healthy
+        required: false
     healthcheck:
       test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3000/api/health"]
       interval: 30s
       timeout: 5s
       retries: 3
 
+  # Local PostgreSQL — opt-in via profile.
+  # Start with: `docker compose --profile local-db up`
+  # Skip this (and set your own DATABASE_URL in .env) to use an external database.
   db:
     image: postgres:16-alpine
+    profiles: ["local-db"]
     restart: unless-stopped
     ports:
       - "5433:5432"

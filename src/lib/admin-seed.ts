@@ -1,16 +1,9 @@
-import { PrismaClient } from "@prisma/client";
-import { PrismaPg } from "@prisma/adapter-pg";
-import dotenv from "dotenv";
-import path from "path";
-
-dotenv.config({ path: path.join(__dirname, "..", ".env") });
-dotenv.config({ path: path.join(__dirname, "..", ".env.local"), override: true });
-
-const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL });
-const prisma = new PrismaClient({ adapter });
-
-async function main() {
-  console.log("Seeding database...");
+/**
+ * Idempotent seed: built-in roles and default backup settings.
+ * Safe to run multiple times — uses upsert.
+ */
+export async function runAdminSeed() {
+  const { prisma } = await import("@/lib/db");
 
   const allPermissions = [
     "dashboard.view",
@@ -67,8 +60,6 @@ async function main() {
     },
   });
 
-  console.log("Seeded default roles");
-
   await prisma.setting.upsert({
     where: { key: "backup.schedule" },
     update: {},
@@ -84,16 +75,4 @@ async function main() {
     update: {},
     create: { key: "backup.retention.weekly", value: "4" },
   });
-
-  console.log("Seeded default backup settings");
-
-  if (process.env.ARMAFIELD_TEST_MODE === "enabled-i-know-what-i-am-doing") {
-    console.log("Test mode detected — loadout data is served from static test-loadout-data.ts, no DB seeding needed.");
-  }
-
-  console.log("Seed complete");
 }
-
-main()
-  .catch((e) => { console.error("Seed failed:", e); process.exit(1); })
-  .finally(async () => { await prisma.$disconnect(); });

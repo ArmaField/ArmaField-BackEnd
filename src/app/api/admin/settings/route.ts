@@ -48,9 +48,25 @@ export async function GET() {
     // Fallback to default if DB read fails
   }
 
+  // Detect if DB is the local docker-compose service or external
+  const dbUrl = process.env.DATABASE_URL ?? "";
+  let databaseType: "local" | "external" | "unknown" = "unknown";
+  try {
+    const u = new URL(dbUrl);
+    // Local: hostname is "db" (docker-compose service name) or localhost/127.0.0.1
+    if (u.hostname === "db" || u.hostname === "localhost" || u.hostname === "127.0.0.1") {
+      databaseType = "local";
+    } else {
+      databaseType = "external";
+    }
+  } catch {
+    databaseType = "unknown";
+  }
+
   const settings = {
     testMode: process.env.ARMAFIELD_TEST_MODE === "enabled-i-know-what-i-am-doing",
     database: dbStatus,
+    databaseType,
     appVersion,
     backupSchedule,
     logLevel: process.env.LOG_LEVEL || "info",
