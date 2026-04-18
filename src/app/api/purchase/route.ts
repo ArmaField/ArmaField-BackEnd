@@ -3,6 +3,8 @@ import { z } from "zod";
 import { Class, WeaponType } from "@prisma/client";
 import { withGameAuth } from "@/lib/game-auth";
 import { buildItemsList } from "@/lib/loadout-helpers";
+import { TEST_MODE } from "@/lib/test-mode";
+import { buildTestItemsList } from "@/lib/test-loadout-helpers";
 
 export const dynamic = "force-dynamic";
 
@@ -49,6 +51,16 @@ export const POST = withGameAuth(async (request: NextRequest) => {
   // Extract hex GUID from prefab path
   const guidMatch = rawGuid.trim().match(/^\{?([0-9a-fA-F]{16})\}?/);
   const guid = guidMatch ? guidMatch[1] : rawGuid.trim();
+
+  // Test mode: fake purchase — no state change, return refreshed items list with xp=0
+  if (TEST_MODE) {
+    return NextResponse.json({
+      ok: true,
+      uid,
+      xp: 0,
+      items: buildTestItemsList(cls, itemType),
+    });
+  }
 
   const { prisma } = await import("@/lib/db");
 

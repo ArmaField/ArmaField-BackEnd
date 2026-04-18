@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { withGameAuth } from "@/lib/game-auth";
 import { CLASS_MAP, WEAPON_TYPE_MAP, buildAttachmentsList } from "@/lib/loadout-helpers";
+import { TEST_MODE } from "@/lib/test-mode";
+import { buildTestAttachmentsList } from "@/lib/test-loadout-helpers";
 
 export const dynamic = "force-dynamic";
 
@@ -33,6 +35,15 @@ export const GET = withGameAuth(async (request: NextRequest) => {
 
   if (!guid) {
     return NextResponse.json({ error: "guid is required" }, { status: 400 });
+  }
+
+  // Test mode: stateless — return attachments from static data, xp=0
+  if (TEST_MODE) {
+    return NextResponse.json({
+      uid,
+      xp: 0,
+      attachments: buildTestAttachmentsList(guid),
+    });
   }
 
   const { prisma } = await import("@/lib/db");

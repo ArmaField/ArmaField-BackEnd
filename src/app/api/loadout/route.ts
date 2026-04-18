@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { Class, WeaponType } from "@prisma/client";
 import { withGameAuth } from "@/lib/game-auth";
+import { TEST_MODE } from "@/lib/test-mode";
 
 export const dynamic = "force-dynamic";
 
@@ -48,6 +49,11 @@ export const POST = withGameAuth(async (request: NextRequest) => {
 
   if (!VALID_TYPES.includes(type)) {
     return NextResponse.json({ ok: false, error: "invalid_type" }, { status: 400 });
+  }
+
+  // Test mode: accept any loadout change, no persistence
+  if (TEST_MODE) {
+    return NextResponse.json({ ok: true });
   }
 
   const { prisma } = await import("@/lib/db");

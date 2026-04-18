@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { withGameAuth } from "@/lib/game-auth";
 import { CLASS_MAP, buildLoadouts } from "@/lib/loadout-helpers";
+import { TEST_MODE } from "@/lib/test-mode";
+import { buildTestLoadouts } from "@/lib/test-loadout-helpers";
 
 export const dynamic = "force-dynamic";
 
@@ -32,6 +34,13 @@ export const POST = withGameAuth(async (request: NextRequest) => {
   const cls = CLASS_MAP[classId];
   if (!cls) {
     return NextResponse.json({ error: "invalid_class" }, { status: 400 });
+  }
+
+  // Test mode: return default loadout for class, no DB access
+  if (TEST_MODE) {
+    const [entry] = buildTestLoadouts(cls);
+    const { classId: cId, ...loadout } = entry;
+    return NextResponse.json({ uid, classId: cId, loadout });
   }
 
   const { prisma } = await import("@/lib/db");

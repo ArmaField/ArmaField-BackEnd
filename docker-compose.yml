@@ -9,6 +9,7 @@ services:
       - AUTH_SECRET=${AUTH_SECRET}
       - AUTH_TRUST_HOST=true
       - AUTH_URL=https://${DOMAIN:-localhost}
+      - DOMAIN=${DOMAIN:-localhost}
       - STEAM_API_KEY=${STEAM_API_KEY}
       - ARMAFIELD_TEST_MODE=${ARMAFIELD_TEST_MODE:-}
       - LOG_LEVEL=${LOG_LEVEL:-info}

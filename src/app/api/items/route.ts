@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { withGameAuth } from "@/lib/game-auth";
 import { CLASS_MAP, buildItemsList } from "@/lib/loadout-helpers";
+import { TEST_MODE } from "@/lib/test-mode";
+import { buildTestItemsList } from "@/lib/test-loadout-helpers";
 
 export const dynamic = "force-dynamic";
 
@@ -24,6 +26,15 @@ export const GET = withGameAuth(async (request: NextRequest) => {
 
   if (![1, 2, 3, 4, 5].includes(typeRaw)) {
     return NextResponse.json({ error: "Invalid type (1-5)" }, { status: 400 });
+  }
+
+  // Test mode: stateless — return items from static data, xp=0
+  if (TEST_MODE) {
+    return NextResponse.json({
+      uid,
+      xp: 0,
+      items: buildTestItemsList(cls, typeRaw),
+    });
   }
 
   const { prisma } = await import("@/lib/db");
