@@ -1,0 +1,57 @@
+services:
+  app:
+    build: .
+    restart: unless-stopped
+    environment:
+      - DATABASE_URL=postgres://armafield:${POSTGRES_PASSWORD:-armafield}@db:5432/armafield
+      - AUTH_SECRET=${AUTH_SECRET}
+      - STEAM_API_KEY=${STEAM_API_KEY}
+      - ARMAFIELD_TEST_MODE=${ARMAFIELD_TEST_MODE:-}
+      - LOG_LEVEL=${LOG_LEVEL:-info}
+    volumes:
+      - ./data/logs:/app/logs
+      - ./data/backups:/app/data/backups
+    depends_on:
+      db:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3000/api/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    ports:
+      - "5433:5432"
+    environment:
+      POSTGRES_USER: armafield
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-armafield}
+      POSTGRES_DB: armafield
+    volumes:
+      - ./data/postgres:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U armafield"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  caddy:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    environment:
+      DOMAIN: ${DOMAIN:-localhost}
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      - app
+
+volumes:
+  caddy_data:
+  caddy_config:

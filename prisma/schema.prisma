@@ -1,0 +1,290 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ─── Enums ───────────────────────────────────────
+
+enum Class {
+  ASSAULT
+  ENGINEER
+  SUPPORT
+  RECON
+}
+
+enum WeaponType {
+  PRIMARY
+  SECONDARY
+  SPECIAL
+}
+
+enum AttachmentSlot {
+  OPTIC
+  UNDER_BARREL
+  HAND_GUARD
+  MUZZLE
+  STOCK
+  MAGAZINE
+}
+
+enum ItemType {
+  WEAPON
+  ATTACHMENT
+  GADGET
+  GRENADE
+}
+
+// ─── Settings ────────────────────────────────────
+
+model Setting {
+  key       String   @id
+  value     String
+  updatedAt DateTime @updatedAt
+
+  @@map("settings")
+}
+
+// ─── Role ────────────────────────────────────────
+
+model Role {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  color       String   @default("#6b7280")
+  permissions String[] @default([])
+  isBuiltIn   Boolean  @default(false)
+  sortOrder   Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  admins      Admin[]
+
+  @@map("roles")
+}
+
+// ─── Admin ───────────────────────────────────────
+
+model Admin {
+  id        String   @id @default(cuid())
+  steamId   String   @unique
+  nickname  String
+  avatar    String?
+  roleId    String?
+  role      Role?    @relation(fields: [roleId], references: [id], onDelete: SetNull)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("admins")
+}
+
+// ─── Server ──────────────────────────────────────
+
+model Server {
+  id        String   @id @default(cuid())
+  name      String
+  ip        String?
+  token     String   @unique @default(uuid())
+  sortOrder Int      @default(0)
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("servers")
+}
+
+// ─── Weapon Category ─────────────────────────────
+
+model WeaponCategory {
+  id       String    @id @default(cuid())
+  name     String    @unique
+  icon     String?
+  color    String?
+  weapons  Weapon[]
+  gadgets  Gadget[]
+  grenades Grenade[]
+
+  @@map("weapon_categories")
+}
+
+// ─── Weapon ──────────────────────────────────────
+
+model Weapon {
+  id          String           @id @default(cuid())
+  guid        String
+  name        String
+  price       Int              @default(0)
+  zorder      Int              @default(0)
+  isDefault   Boolean          @default(false)
+  type        WeaponType
+  class       Class
+  categoryId  String
+  category    WeaponCategory   @relation(fields: [categoryId], references: [id])
+  attachments WeaponAttachment[]
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+
+  @@unique([guid, class])
+  @@map("weapons")
+}
+
+// ─── Attachment (global library) ─────────────────
+
+model Attachment {
+  id           String             @id @default(cuid())
+  guid         String             @unique
+  name         String
+  defaultPrice Int                @default(0)
+  slot         AttachmentSlot
+  weapons      WeaponAttachment[]
+  createdAt    DateTime           @default(now())
+  updatedAt    DateTime           @updatedAt
+
+  @@map("attachments")
+}
+
+// ─── Weapon ↔ Attachment binding ─────────────────
+
+model WeaponAttachment {
+  weaponId      String
+  weapon        Weapon     @relation(fields: [weaponId], references: [id], onDelete: Cascade)
+  attachmentId  String
+  attachment    Attachment @relation(fields: [attachmentId], references: [id], onDelete: Cascade)
+  priceOverride Int?
+  isDefault     Boolean    @default(false)
+
+  @@id([weaponId, attachmentId])
+  @@map("weapon_attachments")
+}
+
+// ─── Gadget ──────────────────────────────────────
+
+model Gadget {
+  id         String          @id @default(cuid())
+  guid       String
+  name       String
+  price      Int             @default(0)
+  zorder     Int             @default(0)
+  isDefault  Boolean         @default(false)
+  class      Class
+  categoryId String?
+  category   WeaponCategory? @relation(fields: [categoryId], references: [id])
+  createdAt  DateTime        @default(now())
+  updatedAt  DateTime        @updatedAt
+
+  @@unique([guid, class])
+  @@map("gadgets")
+}
+
+// ─── Grenade ─────────────────────────────────────
+
+model Grenade {
+  id         String          @id @default(cuid())
+  guid       String
+  name       String
+  price      Int             @default(0)
+  zorder     Int             @default(0)
+  isDefault  Boolean         @default(false)
+  class      Class
+  categoryId String?
+  category   WeaponCategory? @relation(fields: [categoryId], references: [id])
+  createdAt  DateTime        @default(now())
+  updatedAt  DateTime        @updatedAt
+
+  @@unique([guid, class])
+  @@map("grenades")
+}
+
+// ─── Player ──────────────────────────────────────
+
+model Player {
+  id            String          @id @default(cuid())
+  uid           String          @unique
+  nickname      String
+  xpBalance     Int             @default(0)
+  xpLifetime    Int             @default(0)
+  kills         Int             @default(0)
+  deaths        Int             @default(0)
+  assists       Int             @default(0)
+  wins          Int             @default(0)
+  losses        Int             @default(0)
+  flagsCaptured Int             @default(0)
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+  unlocks            PlayerUnlock[]
+  attachmentUnlocks  PlayerWeaponAttachmentUnlock[]
+  loadouts           PlayerLoadout[]
+  weaponSetups       PlayerWeaponSetup[]
+
+  @@map("players")
+}
+
+// ─── Player Unlocks (WEAPON, GADGET, GRENADE) ────
+
+model PlayerUnlock {
+  id        String   @id @default(cuid())
+  playerId  String
+  player    Player   @relation(fields: [playerId], references: [id], onDelete: Cascade)
+  itemType  ItemType
+  itemId    String
+  createdAt DateTime @default(now())
+
+  @@unique([playerId, itemType, itemId])
+  @@map("player_unlocks")
+}
+
+// ─── Player Weapon Attachment Unlocks (per weapon) ─
+
+model PlayerWeaponAttachmentUnlock {
+  id           String   @id @default(cuid())
+  playerId     String
+  player       Player   @relation(fields: [playerId], references: [id], onDelete: Cascade)
+  weaponId     String
+  attachmentId String
+  createdAt    DateTime @default(now())
+
+  @@unique([playerId, weaponId, attachmentId])
+  @@map("player_weapon_attachment_unlocks")
+}
+
+// ─── Player Loadout (per class) ──────────────────
+
+model PlayerLoadout {
+  id        String  @id @default(cuid())
+  playerId  String
+  player    Player  @relation(fields: [playerId], references: [id], onDelete: Cascade)
+  class     Class
+  weaponId  String?
+  pistolId  String?
+  specialId String?
+  gadgetId  String?
+  grenadeId String?
+
+  @@unique([playerId, class])
+  @@map("player_loadouts")
+}
+
+// ─── Player Weapon Setup (customization) ─────────
+
+model PlayerWeaponSetup {
+  id          String                  @id @default(cuid())
+  playerId    String
+  player      Player                  @relation(fields: [playerId], references: [id], onDelete: Cascade)
+  weaponId    String
+  attachments PlayerWeaponAttachment[]
+
+  @@unique([playerId, weaponId])
+  @@map("player_weapon_setups")
+}
+
+// ─── Player Weapon Attachments ───────────────────
+
+model PlayerWeaponAttachment {
+  id           String            @id @default(cuid())
+  setupId      String
+  setup        PlayerWeaponSetup @relation(fields: [setupId], references: [id], onDelete: Cascade)
+  attachmentId String
+
+  @@unique([setupId, attachmentId])
+  @@map("player_weapon_attachments")
+}
