@@ -14,11 +14,21 @@ export const dynamic = "force-dynamic";
 export async function GET(request: Request) {
   const url = new URL(request.url);
 
+  // Public origin (what the user sees) — for final redirects
+  const forwardedProto = request.headers.get("x-forwarded-proto");
+  const forwardedHost = request.headers.get("x-forwarded-host") ?? request.headers.get("host");
+  const publicOrigin = forwardedHost
+    ? `${forwardedProto || "https"}://${forwardedHost}`
+    : (process.env.AUTH_URL || url.origin);
+
+  // Internal origin — for self-fetches (avoids SSL loop through Caddy)
+  const internalOrigin = `http://localhost:${process.env.PORT || "3000"}`;
+
   // Verify the Steam OpenID response
   const steamId = await verifySteamLogin(url.searchParams);
   if (!steamId) {
     return NextResponse.redirect(
-      `${url.origin}/login?error=SteamVerificationFailed`
+      `${publicOrigin}/login?error=SteamVerificationFailed`
     );
   }
 
@@ -76,9 +86,9 @@ export async function GET(request: Request) {
     .map((c) => `${c.name}=${c.value}`)
     .join("; ");
 
-  // First, get a CSRF token from the Auth.js csrf endpoint
-  const csrfRes = await fetch(`${url.origin}/api/admin/auth/csrf`, {
-    headers: { cookie: cookieHeader },
+  // First, get a CSRF token from the Auth.js csrf endpoint (internal fetch — no SSL loop)
+  const csrfRes = await fetch(`${internalOrigin}/api/admin/auth/csrf`, {
+    headers: { cookie: cookieHeader, "x-forwarded-host": forwardedHost ?? "", "x-forwarded-proto": forwardedProto ?? "https" },
   });
   const csrfData = await csrfRes.json();
   const csrfToken = csrfData.csrfToken;
@@ -107,12 +117,14 @@ export async function GET(request: Request) {
   });
 
   const authRes = await fetch(
-    `${url.origin}/api/admin/auth/callback/steam`,
+    `${internalOrigin}/api/admin/auth/callback/steam`,
     {
       method: "POST",
       headers: {
         "Content-Type": "application/x-www-form-urlencoded",
         cookie: updatedCookieHeader,
+        "x-forwarded-host": forwardedHost ?? "",
+        "x-forwarded-proto": forwardedProto ?? "https",
       },
       body: body.toString(),
       redirect: "manual",
@@ -121,11 +133,23 @@ export async function GET(request: Request) {
 
   // Build the response: redirect with all Set-Cookie headers from Auth.js
   const redirectLocation =
-    authRes.headers.get("Location") ?? `${url.origin}${callbackUrl}`;
+    authRes.headers.get("Location") ?? `${publicOrigin}${callbackUrl}`;
 
-  const finalUrl = redirectLocation.startsWith("http")
-    ? redirectLocation
-    : `${url.origin}${redirectLocation}`;
+  // If Auth.js returned a relative path, prepend publicOrigin.
+  // If it returned a full URL with internal host, rewrite to publicOrigin.
+  let finalUrl: string;
+  if (redirectLocation.startsWith("http")) {
+    try {
+      const locUrl = new URL(redirectLocation);
+      locUrl.host = new URL(publicOrigin).host;
+      locUrl.protocol = new URL(publicOrigin).protocol;
+      finalUrl = locUrl.toString();
+    } catch {
+      finalUrl = redirectLocation;
+    }
+  } else {
+    finalUrl = `${publicOrigin}${redirectLocation}`;
+  }
 
   const response = NextResponse.redirect(finalUrl, 302);
 
