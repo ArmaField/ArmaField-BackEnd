@@ -7,6 +7,8 @@ services:
       # Falls back to the local `db` service below if not set.
       - DATABASE_URL=${DATABASE_URL:-postgres://armafield:${POSTGRES_PASSWORD:-armafield}@db:5432/armafield}
       - AUTH_SECRET=${AUTH_SECRET}
+      - AUTH_TRUST_HOST=true
+      - AUTH_URL=https://${DOMAIN:-localhost}
       - STEAM_API_KEY=${STEAM_API_KEY}
       - ARMAFIELD_TEST_MODE=${ARMAFIELD_TEST_MODE:-}
       - LOG_LEVEL=${LOG_LEVEL:-info}
