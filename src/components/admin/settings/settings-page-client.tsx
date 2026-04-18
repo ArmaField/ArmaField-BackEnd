@@ -79,6 +79,7 @@ export function SettingsPageClient() {
   const [loading, setLoading] = useState(true);
   const [seeding, setSeeding] = useState(false);
   const [resetting, setResetting] = useState(false);
+  const [confirmSeed, setConfirmSeed] = useState(false);
   const [confirmReset, setConfirmReset] = useState(false);
 
   const fetchSettings = useCallback(async () => {
@@ -107,6 +108,7 @@ export function SettingsPageClient() {
       const res = await fetch("/api/admin/settings/seed", { method: "POST" });
       if (res.ok) {
         toast.success(t("seedSuccess"));
+        setConfirmSeed(false);
       } else {
         toast.error(t("seedFailed"));
       }
@@ -216,8 +218,19 @@ export function SettingsPageClient() {
           </SettingCard>
 
           <SettingCard title={t("backupSchedule")}>
-            <p className="text-sm text-zinc-200">{cronToHuman(settings.backupSchedule, t, locale)}</p>
-            <p className="mt-1 font-mono text-xs text-zinc-500">{settings.backupSchedule} (cron)</p>
+            {settings.databaseType === "external" ? (
+              <>
+                <Badge className="bg-amber-500/15 text-amber-400 border-amber-500/25">
+                  {t("backupDisabled")}
+                </Badge>
+                <p className="mt-2 text-xs text-zinc-500">{t("backupDisabledHint")}</p>
+              </>
+            ) : (
+              <>
+                <p className="text-sm text-zinc-200">{cronToHuman(settings.backupSchedule, t, locale)}</p>
+                <p className="mt-1 font-mono text-xs text-zinc-500">{settings.backupSchedule} (cron)</p>
+              </>
+            )}
           </SettingCard>
 
           <SettingCard title={t("logLevel")}>
@@ -253,10 +266,10 @@ export function SettingsPageClient() {
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={runSeed}
+                  onClick={() => setConfirmSeed(true)}
                   disabled={seeding || settings.testMode}
                 >
-                  {seeding ? t("loading") : t("runSeed")}
+                  {t("runSeed")}
                 </Button>
               </div>
               <div className="border-t border-zinc-800 pt-3 flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
@@ -277,6 +290,23 @@ export function SettingsPageClient() {
           </SettingCard>
         </div>
       </div>
+
+      <Dialog open={confirmSeed} onOpenChange={(o) => { if (!o) setConfirmSeed(false); }}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>{t("seedConfirmTitle")}</DialogTitle>
+            <DialogDescription>{t("seedConfirmMessage")}</DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setConfirmSeed(false)} disabled={seeding}>
+              {tc("cancel")}
+            </Button>
+            <Button onClick={runSeed} disabled={seeding}>
+              {seeding ? t("loading") : t("seedConfirmButton")}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       <Dialog open={confirmReset} onOpenChange={(o) => { if (!o) setConfirmReset(false); }}>
         <DialogContent>

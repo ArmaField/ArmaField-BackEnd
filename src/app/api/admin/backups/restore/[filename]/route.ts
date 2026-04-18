@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { requirePermission } from "@/lib/admin-auth";
+import { isLocalDatabase } from "@/lib/database-type";
 import { execSync } from "child_process";
 import { createGunzip } from "zlib";
 import { pipeline } from "stream/promises";
@@ -43,6 +44,13 @@ export async function POST(
 ) {
   const { error } = await requirePermission("backups.manage");
   if (error) return error;
+
+  if (!isLocalDatabase()) {
+    return NextResponse.json(
+      { error: "Restore is disabled when using an external database." },
+      { status: 400 },
+    );
+  }
 
   const { filename } = await params;
 

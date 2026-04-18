@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { requirePermission } from "@/lib/admin-auth";
+import { isLocalDatabase } from "@/lib/database-type";
 
 export const dynamic = "force-dynamic";
 
@@ -34,6 +35,13 @@ export async function GET() {
 export async function PUT(request: Request) {
   const { error } = await requirePermission("backups.manage");
   if (error) return error;
+
+  if (!isLocalDatabase()) {
+    return NextResponse.json(
+      { error: "Backup settings can only be changed when using a local database." },
+      { status: 400 },
+    );
+  }
 
   try {
     const body = await request.json();

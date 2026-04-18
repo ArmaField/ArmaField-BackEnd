@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { requirePermission } from "@/lib/admin-auth";
+import { isLocalDatabase } from "@/lib/database-type";
 import { readdir, stat, unlink } from "fs/promises";
 import { join } from "path";
 import { z } from "zod";
@@ -69,6 +70,13 @@ export async function GET() {
 export async function POST() {
   const { error } = await requirePermission("backups.manage");
   if (error) return error;
+
+  if (!isLocalDatabase()) {
+    return NextResponse.json(
+      { error: "Backups are disabled when using an external database. Manage backups via your database provider." },
+      { status: 400 },
+    );
+  }
 
   try {
     const { runBackup } = await import("@/lib/backup");
