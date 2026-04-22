@@ -194,7 +194,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           session.user.roleId = null;
         }
       } catch {
-        // DB unavailable — fall back to empty permissions
+        // DB unavailable - fall back to empty permissions
         session.user.role = token.role as string | null;
         session.user.roleColor = "#6b7280";
         session.user.permissions = [];

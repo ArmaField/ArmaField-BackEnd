@@ -9,7 +9,7 @@ import {
 
 /**
  * Idempotent seed: built-in roles, default backup settings, and default loadout data.
- * Safe to run multiple times — uses upsert everywhere.
+ * Safe to run multiple times - uses upsert everywhere.
  */
 export async function runAdminSeed() {
   const { prisma } = await import("@/lib/db");

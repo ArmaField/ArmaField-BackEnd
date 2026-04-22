@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 
 /**
- * POST /admin/api/locale — Set the user's preferred locale via cookie.
+ * POST /admin/api/locale - Set the user's preferred locale via cookie.
  * Body: { locale: "en" | "ru" }
  */
 export async function POST(request: NextRequest) {

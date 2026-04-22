@@ -1,0 +1,2 @@
+-- RenameIndex
+ALTER INDEX "player_weapon_attachment_unlocks_playerId_weaponId_attachm_key" RENAME TO "player_weapon_attachment_unlocks_playerId_weaponId_attachme_key";

@@ -14,6 +14,8 @@ const SLOT_MAP: Record<number, AttachmentSlot> = {
   4: "MUZZLE",
   5: "STOCK",
   6: "MAGAZINE",
+  7: "TACTICAL_BLOCK",
+  8: "FOREGRIP",
 };
 
 const EquipSchema = z.object({

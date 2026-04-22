@@ -52,7 +52,7 @@ export const POST = withGameAuth(async (request: NextRequest) => {
   const guidMatch = rawGuid.trim().match(/^\{?([0-9a-fA-F]{16})\}?/);
   const guid = guidMatch ? guidMatch[1] : rawGuid.trim();
 
-  // Test mode: fake purchase — no state change, return refreshed items list with xp=0
+  // Test mode: fake purchase - no state change, return refreshed items list with xp=0
   if (TEST_MODE) {
     return NextResponse.json({
       ok: true,
@@ -115,7 +115,7 @@ export const POST = withGameAuth(async (request: NextRequest) => {
     unlockItemType = "GRENADE";
   }
 
-  // Free items are implicitly owned — can't purchase
+  // Free items are implicitly owned - can't purchase
   if (price === 0) {
     return NextResponse.json({ error: "item_is_free" }, { status: 400 });
   }

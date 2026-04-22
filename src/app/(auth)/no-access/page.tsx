@@ -38,7 +38,7 @@ export default async function NoAccessPage() {
           </p>
         </div>
 
-        {/* Steam ID — click to copy */}
+        {/* Steam ID - click to copy */}
         <CopyableText text={session.user.steamId} label={t("yourSteamId")} />
 
         {/* Sign out */}

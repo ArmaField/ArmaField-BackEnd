@@ -27,7 +27,7 @@ export async function GET(request: Request) {
   const where: Record<string, string> = {};
   if (
     slotFilter &&
-    ["OPTIC", "UNDER_BARREL", "HAND_GUARD", "MUZZLE", "STOCK", "MAGAZINE"].includes(slotFilter)
+    ["OPTIC", "UNDER_BARREL", "HAND_GUARD", "MUZZLE", "STOCK", "MAGAZINE", "TACTICAL_BLOCK", "FOREGRIP"].includes(slotFilter)
   ) {
     where.slot = slotFilter;
   }
@@ -45,7 +45,7 @@ const CreateAttachmentSchema = z.object({
   name: z.string().min(1, "Name is required").max(200),
   guid: z.string().min(1, "GUID is required").max(200),
   defaultPrice: z.number().int().min(0).default(0),
-  slot: z.enum(["OPTIC", "UNDER_BARREL", "HAND_GUARD", "MUZZLE", "STOCK", "MAGAZINE"]),
+  slot: z.enum(["OPTIC", "UNDER_BARREL", "HAND_GUARD", "MUZZLE", "STOCK", "MAGAZINE", "TACTICAL_BLOCK", "FOREGRIP"]),
 });
 
 /**

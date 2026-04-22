@@ -118,7 +118,7 @@ export async function DELETE(request: Request) {
 
   const { filename } = result.data;
 
-  // Sanitize — prevent path traversal
+  // Sanitize - prevent path traversal
   if (filename.includes("..") || filename.includes("/") || filename.includes("\\")) {
     return NextResponse.json({ error: "Invalid filename" }, { status: 400 });
   }

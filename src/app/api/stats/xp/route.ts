@@ -14,7 +14,7 @@ const BatchXpSchema = z.array(
 
 /**
  * POST /api/stats/xp
- * Batch XP delta — array of { uid, xp }. Increments xpBalance AND xpLifetime.
+ * Batch XP delta - array of { uid, xp }. Increments xpBalance AND xpLifetime.
  * Negative values subtract. Both values are clamped to 0 (can't go negative).
  * Players not found are silently skipped. Individual failures don't affect others.
  */

@@ -16,7 +16,7 @@ function findPsql(): string {
     execSync("psql --version", { stdio: "pipe" });
     return "psql";
   } catch {
-    // Not in PATH — check common Windows locations
+    // Not in PATH - check common Windows locations
   }
 
   const windowsPaths = [

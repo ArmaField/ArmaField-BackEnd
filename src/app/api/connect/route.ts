@@ -37,7 +37,7 @@ export const POST = withGameAuth(async (request: NextRequest) => {
 
   const { uid, nickname } = result.data;
 
-  // Test mode: no DB access — return default loadouts for all 4 classes, xp=0
+  // Test mode: no DB access - return default loadouts for all 4 classes, xp=0
   if (TEST_MODE) {
     return NextResponse.json({
       uid,

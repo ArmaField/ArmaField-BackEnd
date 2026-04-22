@@ -26,7 +26,7 @@ services:
       timeout: 5s
       retries: 3
 
-  # Local PostgreSQL — opt-in via profile.
+  # Local PostgreSQL - opt-in via profile.
   # Start with: `docker compose --profile local-db up`
   # Skip this (and set your own DATABASE_URL in .env) to use an external database.
   db:

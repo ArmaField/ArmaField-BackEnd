@@ -37,7 +37,7 @@ export const GET = withGameAuth(async (request: NextRequest) => {
     return NextResponse.json({ error: "guid is required" }, { status: 400 });
   }
 
-  // Test mode: stateless — return attachments from static data, xp=0
+  // Test mode: stateless - return attachments from static data, xp=0
   if (TEST_MODE) {
     return NextResponse.json({
       uid,

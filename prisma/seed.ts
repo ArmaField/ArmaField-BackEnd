@@ -88,7 +88,7 @@ async function main() {
   console.log("Seeded default backup settings");
 
   if (process.env.ARMAFIELD_TEST_MODE === "enabled-i-know-what-i-am-doing") {
-    console.log("Test mode detected — loadout data is served from static test-loadout-data.ts, no DB seeding needed.");
+    console.log("Test mode detected - loadout data is served from static test-loadout-data.ts, no DB seeding needed.");
   }
 
   console.log("Seed complete");

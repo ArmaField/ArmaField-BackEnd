@@ -14,14 +14,14 @@ export const dynamic = "force-dynamic";
 export async function GET(request: Request) {
   const url = new URL(request.url);
 
-  // Public origin (what the user sees) — for final redirects
+  // Public origin (what the user sees) - for final redirects
   const forwardedProto = request.headers.get("x-forwarded-proto");
   const forwardedHost = request.headers.get("x-forwarded-host") ?? request.headers.get("host");
   const publicOrigin = forwardedHost
     ? `${forwardedProto || "https"}://${forwardedHost}`
     : (process.env.AUTH_URL || url.origin);
 
-  // Internal origin — for self-fetches (avoids SSL loop through Caddy)
+  // Internal origin - for self-fetches (avoids SSL loop through Caddy)
   const internalOrigin = `http://localhost:${process.env.PORT || "3000"}`;
 
   // Verify the Steam OpenID response
@@ -86,7 +86,7 @@ export async function GET(request: Request) {
     .map((c) => `${c.name}=${c.value}`)
     .join("; ");
 
-  // First, get a CSRF token from the Auth.js csrf endpoint (internal fetch — no SSL loop)
+  // First, get a CSRF token from the Auth.js csrf endpoint (internal fetch - no SSL loop)
   const csrfRes = await fetch(`${internalOrigin}/api/admin/auth/csrf`, {
     headers: { cookie: cookieHeader, "x-forwarded-host": forwardedHost ?? "", "x-forwarded-proto": forwardedProto ?? "https" },
   });

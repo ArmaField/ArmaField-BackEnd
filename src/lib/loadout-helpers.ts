@@ -10,6 +10,8 @@ export const SLOT_TO_INT: Record<string, number> = {
   MUZZLE: 4,
   STOCK: 5,
   MAGAZINE: 6,
+  TACTICAL_BLOCK: 7,
+  FOREGRIP: 8,
 };
 export const INT_TO_SLOT: Record<number, AttachmentSlot> = {
   1: "OPTIC",
@@ -18,6 +20,8 @@ export const INT_TO_SLOT: Record<number, AttachmentSlot> = {
   4: "MUZZLE",
   5: "STOCK",
   6: "MAGAZINE",
+  7: "TACTICAL_BLOCK",
+  8: "FOREGRIP",
 };
 
 type WeaponSlot = { guid: string; price: number; attachments: { type: number; guid: string; price: number }[] } | null;

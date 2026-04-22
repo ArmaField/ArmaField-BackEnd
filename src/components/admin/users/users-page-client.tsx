@@ -209,7 +209,7 @@ export function UsersPageClient({ initialUsers, currentUserId, roles: initialRol
                       </TooltipProvider>
                     </TableCell>
 
-                    {/* Role Badge — dot on mobile, full badge on desktop */}
+                    {/* Role Badge - dot on mobile, full badge on desktop */}
                     <TableCell>
                       <TooltipProvider>
                         <Tooltip>

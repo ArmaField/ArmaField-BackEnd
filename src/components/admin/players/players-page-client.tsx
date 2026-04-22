@@ -445,12 +445,12 @@ export function PlayersPageClient({ canManage = false }: { canManage?: boolean }
                   </button>
                 </TableHead>
 
-                {/* UID — hidden on mobile */}
+                {/* UID - hidden on mobile */}
                 <TableHead className="hidden sm:table-cell text-zinc-400">
                   {t("uid")}
                 </TableHead>
 
-                {/* XP Balance — hidden on mobile */}
+                {/* XP Balance - hidden on mobile */}
                 <TableHead className="hidden sm:table-cell">
                   <button
                     type="button"
@@ -462,7 +462,7 @@ export function PlayersPageClient({ canManage = false }: { canManage?: boolean }
                   </button>
                 </TableHead>
 
-                {/* XP Lifetime — hidden on mobile */}
+                {/* XP Lifetime - hidden on mobile */}
                 <TableHead className="hidden sm:table-cell text-zinc-400">
                   {t("xpLifetime")}
                 </TableHead>
@@ -479,13 +479,13 @@ export function PlayersPageClient({ canManage = false }: { canManage?: boolean }
                   </button>
                 </TableHead>
 
-                {/* K/D Ratio — hidden on mobile */}
+                {/* K/D Ratio - hidden on mobile */}
                 <TableHead className="hidden md:table-cell text-zinc-400">K/D</TableHead>
 
                 {/* W/L */}
                 <TableHead className="text-zinc-400">{t("wl")}</TableHead>
 
-                {/* Last Seen — hidden on mobile */}
+                {/* Last Seen - hidden on mobile */}
                 <TableHead className="hidden sm:table-cell">
                   <button
                     type="button"
@@ -534,7 +534,7 @@ export function PlayersPageClient({ canManage = false }: { canManage?: boolean }
                       </Link>
                     </TableCell>
 
-                    {/* UID — hidden on mobile, truncated, click to copy */}
+                    {/* UID - hidden on mobile, truncated, click to copy */}
                     <TableCell className="hidden sm:table-cell">
                       <TooltipProvider>
                         <Tooltip>
@@ -555,7 +555,7 @@ export function PlayersPageClient({ canManage = false }: { canManage?: boolean }
                       </TooltipProvider>
                     </TableCell>
 
-                    {/* XP Balance — hidden on mobile */}
+                    {/* XP Balance - hidden on mobile */}
                     <TableCell className="hidden sm:table-cell">
                       <span className="inline-flex items-center gap-1.5 text-amber-400">
                         <FaMoneyBillWave className="size-3.5" />
@@ -563,7 +563,7 @@ export function PlayersPageClient({ canManage = false }: { canManage?: boolean }
                       </span>
                     </TableCell>
 
-                    {/* XP Lifetime — hidden on mobile */}
+                    {/* XP Lifetime - hidden on mobile */}
                     <TableCell className="hidden sm:table-cell">
                       <span className="inline-flex items-center gap-1.5 text-purple-400">
                         <FaMoneyBillWave className="size-3.5" />
@@ -580,21 +580,21 @@ export function PlayersPageClient({ canManage = false }: { canManage?: boolean }
                       <span className="text-blue-400">{fmt(player.assists)}</span>
                     </TableCell>
 
-                    {/* K/D Ratio — hidden on mobile */}
+                    {/* K/D Ratio - hidden on mobile */}
                     <TableCell className="hidden md:table-cell">
                       <span className={player.deaths > 0 ? (player.kills / player.deaths >= 1 ? "text-emerald-400" : "text-red-400") : "text-emerald-400"}>
                         {player.deaths > 0 ? (player.kills / player.deaths).toFixed(2) : player.kills.toFixed(2)}
                       </span>
                     </TableCell>
 
-                    {/* W/L — wins green, losses red */}
+                    {/* W/L - wins green, losses red */}
                     <TableCell className="text-xs sm:text-sm">
                       <span className="text-emerald-400">{fmt(player.wins)}</span>
                       <span className="text-zinc-600">/</span>
                       <span className="text-red-400">{fmt(player.losses)}</span>
                     </TableCell>
 
-                    {/* Last Seen — hidden on mobile */}
+                    {/* Last Seen - hidden on mobile */}
                     <TableCell className="hidden sm:table-cell text-zinc-400">
                       {timeAgo(new Date(player.updatedAt), locale)}
                     </TableCell>

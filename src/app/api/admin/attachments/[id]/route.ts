@@ -8,7 +8,7 @@ const UpdateAttachmentSchema = z.object({
   name: z.string().min(1).max(200).optional(),
   guid: z.string().min(1).max(200).optional(),
   defaultPrice: z.number().int().min(0).optional(),
-  slot: z.enum(["OPTIC", "UNDER_BARREL", "HAND_GUARD", "MUZZLE", "STOCK", "MAGAZINE"]).optional(),
+  slot: z.enum(["OPTIC", "UNDER_BARREL", "HAND_GUARD", "MUZZLE", "STOCK", "MAGAZINE", "TACTICAL_BLOCK", "FOREGRIP"]).optional(),
 });
 
 /**
@@ -78,7 +78,7 @@ export async function DELETE(
           select: { playerId: true },
         });
         if (unlocks.length > 0) {
-          // Sum per-player refund — each player may have unlocked the attachment for multiple weapons
+          // Sum per-player refund - each player may have unlocked the attachment for multiple weapons
           const refundByPlayer = new Map<string, number>();
           for (const u of unlocks) {
             refundByPlayer.set(u.playerId, (refundByPlayer.get(u.playerId) ?? 0) + attachment.defaultPrice);

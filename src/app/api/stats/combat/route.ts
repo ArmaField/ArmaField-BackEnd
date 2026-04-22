@@ -32,7 +32,7 @@ export const POST = withGameAuth(async (request: NextRequest) => {
     return NextResponse.json({ error: "validation_error" }, { status: 400 });
   }
 
-  // In test mode — don't touch DB
+  // In test mode - don't touch DB
   if (TEST_MODE) {
     return NextResponse.json({ ok: true });
   }
@@ -44,7 +44,7 @@ export const POST = withGameAuth(async (request: NextRequest) => {
 
   const { prisma } = await import("@/lib/db");
 
-  // Process each delta independently — if one fails, others still succeed.
+  // Process each delta independently - if one fails, others still succeed.
   // Always return 200 so the game server doesn't retry.
   await Promise.allSettled(
     deltas.map((d) =>

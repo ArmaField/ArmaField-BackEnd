@@ -28,7 +28,7 @@ export const GET = withGameAuth(async (request: NextRequest) => {
     return NextResponse.json({ error: "Invalid type (1-5)" }, { status: 400 });
   }
 
-  // Test mode: stateless — return items from static data, xp=0
+  // Test mode: stateless - return items from static data, xp=0
   if (TEST_MODE) {
     return NextResponse.json({
       uid,

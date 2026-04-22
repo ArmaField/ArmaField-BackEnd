@@ -4,7 +4,7 @@ export async function register() {
   const { isLocalDatabase } = await import("./lib/database-type");
 
   if (!isLocalDatabase()) {
-    console.log("External database detected — backup scheduler disabled (managed by user).");
+    console.log("External database detected - backup scheduler disabled (managed by user).");
     return;
   }
 

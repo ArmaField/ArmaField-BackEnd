@@ -22,7 +22,7 @@ export interface Weapon {
 }
 
 
-export const ATTACHMENT_SLOTS = ["OPTIC", "UNDER_BARREL", "HAND_GUARD", "MUZZLE", "STOCK", "MAGAZINE"] as const;
+export const ATTACHMENT_SLOTS = ["OPTIC", "UNDER_BARREL", "HAND_GUARD", "MUZZLE", "STOCK", "MAGAZINE", "TACTICAL_BLOCK", "FOREGRIP"] as const;
 export type AttachmentSlot = (typeof ATTACHMENT_SLOTS)[number];
 
 export interface Attachment {

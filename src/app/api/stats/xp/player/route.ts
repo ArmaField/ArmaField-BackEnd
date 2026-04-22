@@ -12,7 +12,7 @@ const SinglePlayerXpSchema = z.object({
 
 /**
  * POST /api/stats/xp/player
- * Single player XP delta — { uid, xp }. Increments xpBalance AND xpLifetime.
+ * Single player XP delta - { uid, xp }. Increments xpBalance AND xpLifetime.
  * Negative values subtract. Both values are clamped to 0.
  */
 export const POST = withGameAuth(async (request: NextRequest) => {

@@ -6,7 +6,7 @@ export const dynamic = "force-dynamic";
 
 /**
  * POST /api/admin/settings/seed
- * Run idempotent seed — built-in roles and default backup settings.
+ * Run idempotent seed - built-in roles and default backup settings.
  * Safe to run multiple times (uses upsert, no duplicates).
  */
 export async function POST() {

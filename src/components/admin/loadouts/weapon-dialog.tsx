@@ -91,6 +91,8 @@ export function WeaponDialog({
         MUZZLE: "slotMuzzle",
         STOCK: "slotStock",
         MAGAZINE: "slotMagazine",
+        TACTICAL_BLOCK: "slotTacticalBlock",
+        FOREGRIP: "slotForegrip",
       };
       return t(map[slot]);
     },
@@ -427,7 +429,7 @@ export function WeaponDialog({
                                 {count}
                               </Badge>
                             ) : (
-                              <span className="text-xs text-zinc-600">—</span>
+                              <span className="text-xs text-zinc-600">-</span>
                             )}
                           </button>
                         );

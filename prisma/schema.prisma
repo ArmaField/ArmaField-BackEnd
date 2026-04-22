@@ -28,6 +28,8 @@ enum AttachmentSlot {
   MUZZLE
   STOCK
   MAGAZINE
+  TACTICAL_BLOCK
+  FOREGRIP
 }
 
 enum ItemType {

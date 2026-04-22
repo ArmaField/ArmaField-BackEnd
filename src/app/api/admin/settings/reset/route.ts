@@ -7,8 +7,8 @@ export const dynamic = "force-dynamic";
 /**
  * POST /api/admin/settings/reset
  * WIPE the database (all user data) and re-run initial seed.
- * Preserves the schema (migrations) — only truncates data.
- * DESTRUCTIVE — SUPER_ADMIN only, requires confirmation on the client.
+ * Preserves the schema (migrations) - only truncates data.
+ * DESTRUCTIVE - SUPER_ADMIN only, requires confirmation on the client.
  */
 export async function POST() {
   const { error } = await requirePermission("system.view");

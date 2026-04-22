@@ -23,7 +23,7 @@ const PAGE_PERMISSIONS: Record<string, string> = {
  * Uses next-auth's `auth()` wrapper to get the session on the request,
  * then applies permission-based routing logic for protected routes.
  *
- * In test mode, all auth checks are bypassed — every page is accessible
+ * In test mode, all auth checks are bypassed - every page is accessible
  * as if the user were a SUPER_ADMIN.
  */
 export const proxy = auth((req: NextRequest & { auth: Session | null }) => {

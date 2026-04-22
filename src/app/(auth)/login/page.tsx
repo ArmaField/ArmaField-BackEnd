@@ -8,7 +8,7 @@ export const dynamic = "force-dynamic";
 export default async function LoginPage(props: {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
-  // In test mode, the login page is not needed — redirect to dashboard
+  // In test mode, the login page is not needed - redirect to dashboard
   if (isTestMode()) {
     redirect("/");
   }

@@ -64,7 +64,7 @@
     "yourSteamId": "Your Steam ID"
   },
   "testBanner": {
-    "message": "TEST MODE — Authentication disabled, test data active"
+    "message": "TEST MODE - Authentication disabled, test data active"
   },
   "dashboard": {
     "title": "Dashboard",
@@ -254,6 +254,8 @@
     "slotMuzzle": "Muzzle",
     "slotStock": "Stock",
     "slotMagazine": "Magazine",
+    "slotTacticalBlock": "Tactical Block",
+    "slotForegrip": "Foregrip",
     "attachmentManager": "{slot} Attachments",
     "searchAttachments": "Search...",
     "bound": "Bound",
@@ -337,7 +339,7 @@
       "NONE": "NONE",
       "NO_ROLE": "NO ROLE"
     },
-    "changeRole": "Change role — {name}",
+    "changeRole": "Change role - {name}",
     "manageRoles": "Manage Roles",
     "rolesTitle": "Role Management",
     "createRole": "Create Role",
@@ -373,8 +375,8 @@
   },
   "backups": {
     "title": "Backups",
-    "externalDbTitle": "Backups disabled — using external database",
-    "externalDbMessage": "This instance connects to an external PostgreSQL database. Backup management (creation, schedule, restore) is disabled — use your database provider's backup tools instead.",
+    "externalDbTitle": "Backups disabled - using external database",
+    "externalDbMessage": "This instance connects to an external PostgreSQL database. Backup management (creation, schedule, restore) is disabled - use your database provider's backup tools instead.",
     "backupCount": "{count, plural, one {# backup} other {# backups}}",
     "loadingBackups": "Loading backups...",
     "noBackups": "No backups found. Create a manual backup or wait for the scheduled one.",
@@ -449,7 +451,7 @@
     "dbActions": "Database Actions",
     "runSeed": "Run initial seed",
     "resetDatabase": "Reset database",
-    "seedDescription": "Creates default roles, settings, categories, weapons, attachments, gadgets and grenades. Safe — uses upsert, won't duplicate existing data.",
+    "seedDescription": "Creates default roles, settings, categories, weapons, attachments, gadgets and grenades. Safe - uses upsert, won't duplicate existing data.",
     "seedConfirmTitle": "Run initial seed?",
     "seedConfirmMessage": "This will create or update default roles, backup settings, and all default loadout data (categories, weapons, attachments, gadgets, grenades). Existing records with matching unique keys will be updated. Continue?",
     "seedConfirmButton": "Yes, run seed",

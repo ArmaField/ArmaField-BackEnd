@@ -23,7 +23,7 @@ export const openApiSpec = {
   ],
   tags: [
     { name: "Player", description: "Player session and profile (connect, respawn)" },
-    { name: "Loadout", description: "Loadout selection — list available items and update class slots" },
+    { name: "Loadout", description: "Loadout selection - list available items and update class slots" },
     { name: "Stats", description: "Player stats updates (combat, xp, match results)" },
     { name: "System", description: "System health and status" },
   ],
@@ -221,7 +221,7 @@ export const openApiSpec = {
           },
           "401": { description: "Invalid or missing Bearer token", content: { "application/json": { schema: { $ref: "#/components/schemas/Error" } } } },
           "403": {
-            description: "Forbidden. Error codes: `item_not_unlocked` — player hasn't unlocked this paid item",
+            description: "Forbidden. Error codes: `item_not_unlocked` - player hasn't unlocked this paid item",
             content: {
               "application/json": {
                 example: { ok: false, error: "item_not_unlocked" },
@@ -229,7 +229,7 @@ export const openApiSpec = {
             },
           },
           "404": {
-            description: "Not found. Error codes: `player_not_found`, `item_not_found` — item with this guid doesn't exist for the given class+type",
+            description: "Not found. Error codes: `player_not_found`, `item_not_found` - item with this guid doesn't exist for the given class+type",
             content: {
               "application/json": {
                 example: { ok: false, error: "item_not_found" },
@@ -257,7 +257,7 @@ export const openApiSpec = {
                   classId: { type: "integer", enum: [1, 2, 3, 4], description: "1=ASSAULT, 2=ENGINEER, 3=SUPPORT, 4=RECON" },
                   weaponType: { type: "integer", enum: [1, 2, 3], description: "1=PRIMARY, 2=SECONDARY, 3=SPECIAL" },
                   weaponGuid: { type: "string", description: "Weapon GUID (or prefab path)" },
-                  attachmentType: { type: "integer", enum: [1, 2, 3, 4, 5, 6], description: "1=OPTIC, 2=UNDER_BARREL, 3=HAND_GUARD, 4=MUZZLE, 5=STOCK, 6=MAGAZINE" },
+                  attachmentType: { type: "integer", enum: [1, 2, 3, 4, 5, 6, 7, 8], description: "1=OPTIC, 2=UNDER_BARREL, 3=HAND_GUARD, 4=MUZZLE, 5=STOCK, 6=MAGAZINE, 7=TACTICAL_BLOCK, 8=FOREGRIP" },
                   attachmentGuid: { type: "string", description: "Attachment GUID (or prefab path). Empty string \"\" to remove." },
                 },
               },
@@ -350,7 +350,7 @@ export const openApiSpec = {
                   classId: { type: "integer", enum: [1, 2, 3, 4] },
                   weaponType: { type: "integer", enum: [1, 2, 3], description: "1=PRIMARY, 2=SECONDARY, 3=SPECIAL" },
                   weaponGuid: { type: "string" },
-                  attachmentType: { type: "integer", enum: [1, 2, 3, 4, 5, 6], description: "1=OPTIC, 2=UNDER_BARREL, 3=HAND_GUARD, 4=MUZZLE, 5=STOCK, 6=MAGAZINE" },
+                  attachmentType: { type: "integer", enum: [1, 2, 3, 4, 5, 6, 7, 8], description: "1=OPTIC, 2=UNDER_BARREL, 3=HAND_GUARD, 4=MUZZLE, 5=STOCK, 6=MAGAZINE, 7=TACTICAL_BLOCK, 8=FOREGRIP" },
                   attachmentGuid: { type: "string" },
                 },
               },
@@ -431,7 +431,7 @@ export const openApiSpec = {
         tags: ["Stats"],
         summary: "XP batch update",
         description:
-          "Batch XP delta — array of { uid, xp }. Increments xpBalance AND xpLifetime. Negative values subtract (both clamped to 0). Players not found are silently skipped. Individual failures don't affect others.",
+          "Batch XP delta - array of { uid, xp }. Increments xpBalance AND xpLifetime. Negative values subtract (both clamped to 0). Players not found are silently skipped. Individual failures don't affect others.",
         requestBody: {
           required: true,
           content: {
@@ -536,7 +536,7 @@ export const openApiSpec = {
         tags: ["Player"],
         summary: "Player respawn loadout",
         description:
-          "Returns the player's full loadout for a specific class — weapons (with equipped attachments), gadget, and grenade GUIDs. Called when the player respawns.",
+          "Returns the player's full loadout for a specific class - weapons (with equipped attachments), gadget, and grenade GUIDs. Called when the player respawns.",
         requestBody: {
           required: true,
           content: {
