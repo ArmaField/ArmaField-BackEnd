@@ -229,10 +229,22 @@ After the first Steam login the user gets **Super Admin** role automatically. Fr
 
 ## Updates
 
+Use the helper script - it auto-detects your deployment mode, rebuilds, and prunes old images and stale build cache so your disk doesn't silently fill up after every rebuild:
+
+```
+cd /opt/armafield
+./scripts/update.sh
+```
+
+The script runs `git pull`, `docker compose up -d --build` (preserving `--profile local-db` if the `db` service is running), then `docker image prune -f` and `docker builder prune -af --filter "until=72h"`. It prints how much disk space was reclaimed.
+
+**Manual equivalent**, if you'd rather run things yourself:
 ```
 cd /opt/armafield
 git pull
 docker compose up -d --build
+docker image prune -f
+docker builder prune -af --filter "until=72h"
 ```
 
 Database migrations run automatically on container start via `npx prisma migrate deploy` (in `Dockerfile`'s `CMD`). Existing data is preserved.
