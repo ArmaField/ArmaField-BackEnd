@@ -28,9 +28,12 @@ import {
   TrashIcon,
   Loader2Icon,
   SettingsIcon,
+  CopyIcon,
 } from "lucide-react";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { DeleteWeaponDialog } from "./delete-weapon-dialog";
 import { AttachmentManagerDialog } from "./attachment-manager-dialog";
+import { CopyToClassesDialog } from "./copy-to-classes-dialog";
 import type {
   Weapon,
   WeaponCategory,
@@ -74,6 +77,7 @@ export function WeaponDialog({
   const [isDefault, setIsDefault] = useState(false);
   const [loading, setLoading] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
+  const [copyOpen, setCopyOpen] = useState(false);
 
   // Attachment state (only when editing)
   const [bindings, setBindings] = useState<WeaponAttachmentBinding[]>([]);
@@ -264,26 +268,30 @@ export function WeaponDialog({
           <form onSubmit={handleSubmit}>
             <div className="space-y-4">
               {/* Default + Sort Order */}
-              <div className="flex items-center gap-3 rounded-md border border-zinc-800 px-3 py-2">
-                <Label htmlFor="weapon-default" className="text-sm flex-1">{t("isDefault")}</Label>
-                <Switch
-                  id="weapon-default"
-                  checked={isDefault}
-                  onCheckedChange={setIsDefault}
-                  disabled={loading}
-                />
-                <div className="w-px h-5 bg-zinc-700" />
-                <Label htmlFor="weapon-zorder" className="text-sm text-zinc-400 shrink-0">{t("sortOrder")}</Label>
-                <Input
-                  id="weapon-zorder"
-                  inputMode="numeric"
-                  placeholder="0"
-                  value={zorder}
-                  onChange={(e) => { setZorder(e.target.value.replace(/\D/g, "")); setZorderTouched(true); }}
-                  disabled={loading}
-                  autoComplete="off"
-                  className="h-7 w-16 text-center text-sm"
-                />
+              <div className="flex flex-col gap-3 rounded-md border border-zinc-800 px-3 py-2 sm:flex-row sm:items-center">
+                <div className="flex flex-1 items-center gap-3">
+                  <Label htmlFor="weapon-default" className="text-sm flex-1">{t("isDefault")}</Label>
+                  <Switch
+                    id="weapon-default"
+                    checked={isDefault}
+                    onCheckedChange={setIsDefault}
+                    disabled={loading}
+                  />
+                </div>
+                <div className="hidden w-px h-5 bg-zinc-700 sm:block" />
+                <div className="flex items-center justify-between gap-3 sm:justify-start">
+                  <Label htmlFor="weapon-zorder" className="text-sm text-zinc-400 shrink-0">{t("sortOrder")}</Label>
+                  <Input
+                    id="weapon-zorder"
+                    inputMode="numeric"
+                    placeholder="0"
+                    value={zorder}
+                    onChange={(e) => { setZorder(e.target.value.replace(/\D/g, "")); setZorderTouched(true); }}
+                    disabled={loading}
+                    autoComplete="off"
+                    className="h-7 w-16 text-center text-sm"
+                  />
+                </div>
               </div>
 
               {/* Name */}
@@ -440,18 +448,38 @@ export function WeaponDialog({
               )}
             </div>
 
-            <DialogFooter className="mt-4">
+            <DialogFooter className="mt-4 flex-row flex-wrap justify-end">
               {isEditing && (
-                <Button
-                  type="button"
-                  variant="destructive"
-                  className="mr-auto"
-                  onClick={() => setDeleteOpen(true)}
-                  disabled={loading}
-                >
-                  <TrashIcon data-icon="inline-start" />
-                  {tc("delete")}
-                </Button>
+                <div className="mr-auto flex items-center gap-2">
+                  <Button
+                    type="button"
+                    variant="destructive"
+                    onClick={() => setDeleteOpen(true)}
+                    disabled={loading}
+                  >
+                    <TrashIcon data-icon="inline-start" />
+                    {tc("delete")}
+                  </Button>
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger
+                        render={
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="icon"
+                            aria-label={t("copyToClasses")}
+                            onClick={() => setCopyOpen(true)}
+                            disabled={loading}
+                          />
+                        }
+                      >
+                        <CopyIcon />
+                      </TooltipTrigger>
+                      <TooltipContent>{t("copyToClasses")}</TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                </div>
               )}
               <Button
                 type="button"
@@ -483,6 +511,7 @@ export function WeaponDialog({
           slot={attachmentSlotOpen}
           slotLabel={getSlotLabel(attachmentSlotOpen)}
           weaponId={weapon.id}
+          weaponClass={weapon.class}
           bindings={bindings}
           allAttachments={allAttachments}
           onRefresh={fetchAttachments}
@@ -500,6 +529,18 @@ export function WeaponDialog({
             onOpenChange(false);
             onSuccess();
           }}
+        />
+      )}
+
+      {/* Copy to classes sub-dialog */}
+      {isEditing && weapon && (
+        <CopyToClassesDialog
+          open={copyOpen}
+          onOpenChange={setCopyOpen}
+          title={t("copyWeaponToClassesTitle", { name: weapon.name })}
+          sourceClass={weapon.class}
+          apiPath={`/api/admin/weapons/${weapon.id}/copy-to-classes`}
+          onSuccess={onSuccess}
         />
       )}
     </>

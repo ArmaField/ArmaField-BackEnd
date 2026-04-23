@@ -23,8 +23,10 @@ import {
   TrashIcon,
   Loader2Icon,
   XIcon,
+  CopyIcon,
 } from "lucide-react";
-import type { Attachment, AttachmentSlot, WeaponAttachmentBinding } from "./types";
+import type { Attachment, AttachmentSlot, Class, WeaponAttachmentBinding } from "./types";
+import { CopyAttachmentsFromWeaponDialog } from "./copy-attachments-from-weapon-dialog";
 
 interface AttachmentManagerDialogProps {
   open: boolean;
@@ -32,6 +34,7 @@ interface AttachmentManagerDialogProps {
   slot: AttachmentSlot;
   slotLabel: string;
   weaponId: string;
+  weaponClass: Class;
   bindings: WeaponAttachmentBinding[];
   allAttachments: Attachment[];
   onRefresh: () => void;
@@ -45,6 +48,7 @@ export function AttachmentManagerDialog({
   slot,
   slotLabel,
   weaponId,
+  weaponClass,
   bindings,
   allAttachments,
   onRefresh,
@@ -67,6 +71,9 @@ export function AttachmentManagerDialog({
   const [confirmDelete, setConfirmDelete] = useState<Attachment | null>(null);
   const [confirmUnbind, setConfirmUnbind] = useState<Attachment | null>(null);
   const [refundOnAction, setRefundOnAction] = useState(false);
+
+  // Copy-from-weapon sub-dialog state
+  const [copyFromWeaponOpen, setCopyFromWeaponOpen] = useState(false);
 
   const slotAttachments = useMemo(
     () => allAttachments.filter((a) => a.slot === slot),
@@ -359,16 +366,28 @@ export function AttachmentManagerDialog({
                 })}
               </div>
 
-              <Button
-                variant="outline"
-                size="sm"
-                className="w-full shrink-0"
-                onClick={startCreate}
-                disabled={loading}
-              >
-                <PlusIcon data-icon="inline-start" />
-                {t("createAttachment")}
-              </Button>
+              <div className="flex shrink-0 flex-col gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="w-full"
+                  onClick={startCreate}
+                  disabled={loading}
+                >
+                  <PlusIcon data-icon="inline-start" />
+                  {t("createAttachment")}
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="w-full"
+                  onClick={() => setCopyFromWeaponOpen(true)}
+                  disabled={loading}
+                >
+                  <CopyIcon data-icon="inline-start" />
+                  {t("copyFromWeapon")}
+                </Button>
+              </div>
             </div>
 
             {/* Right panel - Edit / Create */}
@@ -570,6 +589,17 @@ export function AttachmentManagerDialog({
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* Copy attachment bindings from another weapon */}
+      <CopyAttachmentsFromWeaponDialog
+        open={copyFromWeaponOpen}
+        onOpenChange={setCopyFromWeaponOpen}
+        slot={slot}
+        slotLabel={slotLabel}
+        targetWeaponId={weaponId}
+        targetWeaponClass={weaponClass}
+        onSuccess={onRefresh}
+      />
     </>
   );
 }

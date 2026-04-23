@@ -3,7 +3,7 @@
 import { useMemo } from "react";
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
-import { PlusIcon, StarIcon } from "lucide-react";
+import { PlusIcon, StarIcon, CopyIcon } from "lucide-react";
 import type { Weapon, WeaponCategory } from "./types";
 
 interface WeaponChipGridProps {
@@ -12,6 +12,7 @@ interface WeaponChipGridProps {
   categories: WeaponCategory[];
   onAdd: () => void;
   onEdit: (weapon: Weapon) => void;
+  onCopyFromClass?: () => void;
   readOnly?: boolean;
 }
 
@@ -21,6 +22,7 @@ export function WeaponChipGrid({
   categories,
   onAdd,
   onEdit,
+  onCopyFromClass,
   readOnly = false,
 }: WeaponChipGridProps) {
   const t = useTranslations("loadouts");
@@ -64,10 +66,28 @@ export function WeaponChipGrid({
           {title}
         </h3>
         {!readOnly && (
-          <Button variant="outline" size="xs" onClick={onAdd}>
-            <PlusIcon data-icon="inline-start" />
-            {tc("add")}
-          </Button>
+          <>
+            <Button
+              variant="outline"
+              size="xs"
+              onClick={onAdd}
+              aria-label={tc("add")}
+            >
+              <PlusIcon data-icon="inline-start" />
+              <span className="hidden sm:inline">{tc("add")}</span>
+            </Button>
+            {onCopyFromClass && (
+              <Button
+                variant="outline"
+                size="xs"
+                onClick={onCopyFromClass}
+                aria-label={t("copyFromClass")}
+              >
+                <CopyIcon data-icon="inline-start" />
+                <span className="hidden sm:inline">{t("copyFromClass")}</span>
+              </Button>
+            )}
+          </>
         )}
       </div>
 

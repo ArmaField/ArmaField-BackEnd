@@ -16,7 +16,10 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
-import { TrashIcon } from "lucide-react";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { TrashIcon, CopyIcon } from "lucide-react";
+import { CopyToClassesDialog } from "./copy-to-classes-dialog";
+import type { Class } from "./types";
 
 interface SimpleItem {
   id: string;
@@ -72,6 +75,9 @@ export function SimpleItemDialog({
   const [deleteLoading, setDeleteLoading] = useState(false);
   const [refund, setRefund] = useState(false);
   const [ownerCount, setOwnerCount] = useState<number | null>(null);
+
+  // Copy-to-classes sub-dialog state
+  const [copyOpen, setCopyOpen] = useState(false);
 
   // Fetch next zorder for this item type + class
   const fetchNextZorder = useCallback(async () => {
@@ -241,26 +247,30 @@ export function SimpleItemDialog({
           <form onSubmit={handleSubmit}>
             <div className="space-y-4">
               {/* Default + Sort Order */}
-              <div className="flex items-center gap-3 rounded-md border border-zinc-800 px-3 py-2">
-                <Label htmlFor="item-default" className="text-sm flex-1">{t("isDefault")}</Label>
-                <Switch
-                  id="item-default"
-                  checked={isDefault}
-                  onCheckedChange={setIsDefault}
-                  disabled={loading}
-                />
-                <div className="w-px h-5 bg-zinc-700" />
-                <Label htmlFor="item-zorder" className="text-sm text-zinc-400 shrink-0">{t("sortOrder")}</Label>
-                <Input
-                  id="item-zorder"
-                  inputMode="numeric"
-                  placeholder="0"
-                  value={zorder}
-                  onChange={(e) => { setZorder(e.target.value.replace(/\D/g, "")); setZorderTouched(true); }}
-                  disabled={loading}
-                  autoComplete="off"
-                  className="h-7 w-16 text-center text-sm"
-                />
+              <div className="flex flex-col gap-3 rounded-md border border-zinc-800 px-3 py-2 sm:flex-row sm:items-center">
+                <div className="flex flex-1 items-center gap-3">
+                  <Label htmlFor="item-default" className="text-sm flex-1">{t("isDefault")}</Label>
+                  <Switch
+                    id="item-default"
+                    checked={isDefault}
+                    onCheckedChange={setIsDefault}
+                    disabled={loading}
+                  />
+                </div>
+                <div className="hidden w-px h-5 bg-zinc-700 sm:block" />
+                <div className="flex items-center justify-between gap-3 sm:justify-start">
+                  <Label htmlFor="item-zorder" className="text-sm text-zinc-400 shrink-0">{t("sortOrder")}</Label>
+                  <Input
+                    id="item-zorder"
+                    inputMode="numeric"
+                    placeholder="0"
+                    value={zorder}
+                    onChange={(e) => { setZorder(e.target.value.replace(/\D/g, "")); setZorderTouched(true); }}
+                    disabled={loading}
+                    autoComplete="off"
+                    className="h-7 w-16 text-center text-sm"
+                  />
+                </div>
               </div>
 
               {/* Name */}
@@ -353,18 +363,38 @@ export function SimpleItemDialog({
 
             </div>
 
-            <DialogFooter className="mt-4">
+            <DialogFooter className="mt-4 flex-row flex-wrap justify-end">
               {isEditing && (
-                <Button
-                  type="button"
-                  variant="destructive"
-                  className="mr-auto"
-                  onClick={() => setDeleteOpen(true)}
-                  disabled={loading}
-                >
-                  <TrashIcon data-icon="inline-start" />
-                  {tc("delete")}
-                </Button>
+                <div className="mr-auto flex items-center gap-2">
+                  <Button
+                    type="button"
+                    variant="destructive"
+                    onClick={() => setDeleteOpen(true)}
+                    disabled={loading}
+                  >
+                    <TrashIcon data-icon="inline-start" />
+                    {tc("delete")}
+                  </Button>
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger
+                        render={
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="icon"
+                            aria-label={t("copyToClasses")}
+                            onClick={() => setCopyOpen(true)}
+                            disabled={loading}
+                          />
+                        }
+                      >
+                        <CopyIcon />
+                      </TooltipTrigger>
+                      <TooltipContent>{t("copyToClasses")}</TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                </div>
               )}
               <Button
                 type="button"
@@ -441,6 +471,18 @@ export function SimpleItemDialog({
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* Copy-to-classes sub-dialog */}
+      {isEditing && item && (
+        <CopyToClassesDialog
+          open={copyOpen}
+          onOpenChange={setCopyOpen}
+          title={t("copyItemToClassesTitle", { label: itemLabel, name: item.name })}
+          sourceClass={defaultClass as Class}
+          apiPath={`${apiPath}/${item.id}/copy-to-classes`}
+          onSuccess={onSuccess}
+        />
+      )}
     </>
   );
 }

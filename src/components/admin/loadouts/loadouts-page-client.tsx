@@ -11,6 +11,7 @@ import { WeaponDialog } from "./weapon-dialog";
 import { CategoryManagementDialog } from "./category-management-dialog";
 import { SimpleItemChipGrid } from "./simple-item-chip-grid";
 import { SimpleItemDialog } from "./simple-item-dialog";
+import { CopyFromClassDialog } from "./copy-from-class-dialog";
 import { CLASSES, type Class, type Weapon, type WeaponCategory, type Gadget, type Grenade } from "./types";
 
 interface LoadoutsPageClientProps {
@@ -52,6 +53,14 @@ export function LoadoutsPageClient({
   // Grenade dialog state
   const [grenadeDialogOpen, setGrenadeDialogOpen] = useState(false);
   const [editingGrenade, setEditingGrenade] = useState<Grenade | null>(null);
+
+  // Shared "Copy from class" dialog state
+  const [copyDialog, setCopyDialog] = useState<{
+    title: string;
+    apiPath: string;
+    type?: "PRIMARY" | "SECONDARY" | "SPECIAL";
+    onSuccess: () => void;
+  } | null>(null);
 
   const refreshWeapons = useCallback(async () => {
     try {
@@ -236,6 +245,14 @@ export function LoadoutsPageClient({
                 categories={categories}
                 onAdd={() => handleAddWeapon("PRIMARY")}
                 onEdit={handleEditWeapon}
+                onCopyFromClass={() =>
+                  setCopyDialog({
+                    title: t("copyPrimaryFromClassTitle"),
+                    apiPath: "/api/admin/weapons/copy-from-class",
+                    type: "PRIMARY",
+                    onSuccess: refreshWeapons,
+                  })
+                }
                 readOnly={testMode}
               />
             </div>
@@ -248,6 +265,14 @@ export function LoadoutsPageClient({
                 categories={categories}
                 onAdd={() => handleAddWeapon("SECONDARY")}
                 onEdit={handleEditWeapon}
+                onCopyFromClass={() =>
+                  setCopyDialog({
+                    title: t("copySecondaryFromClassTitle"),
+                    apiPath: "/api/admin/weapons/copy-from-class",
+                    type: "SECONDARY",
+                    onSuccess: refreshWeapons,
+                  })
+                }
                 readOnly={testMode}
               />
             </div>
@@ -260,6 +285,14 @@ export function LoadoutsPageClient({
                 categories={categories}
                 onAdd={() => handleAddWeapon("SPECIAL")}
                 onEdit={handleEditWeapon}
+                onCopyFromClass={() =>
+                  setCopyDialog({
+                    title: t("copySpecialFromClassTitle"),
+                    apiPath: "/api/admin/weapons/copy-from-class",
+                    type: "SPECIAL",
+                    onSuccess: refreshWeapons,
+                  })
+                }
                 readOnly={testMode}
               />
             </div>
@@ -273,6 +306,13 @@ export function LoadoutsPageClient({
                 categories={categories}
                 onAdd={handleAddGadget}
                 onEdit={handleEditGadget}
+                onCopyFromClass={() =>
+                  setCopyDialog({
+                    title: t("copyGadgetsFromClassTitle"),
+                    apiPath: "/api/admin/gadgets/copy-from-class",
+                    onSuccess: refreshGadgets,
+                  })
+                }
                 readOnly={testMode}
               />
             </div>
@@ -286,6 +326,13 @@ export function LoadoutsPageClient({
                 categories={categories}
                 onAdd={handleAddGrenade}
                 onEdit={handleEditGrenade}
+                onCopyFromClass={() =>
+                  setCopyDialog({
+                    title: t("copyGrenadesFromClassTitle"),
+                    apiPath: "/api/admin/grenades/copy-from-class",
+                    onSuccess: refreshGrenades,
+                  })
+                }
                 readOnly={testMode}
               />
             </div>
@@ -346,6 +393,19 @@ export function LoadoutsPageClient({
         categories={categories}
         onSuccess={refreshGrenades}
       />
+
+      {/* Copy from class dialog (shared by all sections) */}
+      {copyDialog && (
+        <CopyFromClassDialog
+          open={!!copyDialog}
+          onOpenChange={(open) => { if (!open) setCopyDialog(null); }}
+          title={copyDialog.title}
+          targetClass={activeClass}
+          apiPath={copyDialog.apiPath}
+          type={copyDialog.type}
+          onSuccess={copyDialog.onSuccess}
+        />
+      )}
 
     </div>
   );

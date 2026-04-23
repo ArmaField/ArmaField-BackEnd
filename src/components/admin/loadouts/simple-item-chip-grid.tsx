@@ -3,7 +3,7 @@
 import { useMemo } from "react";
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
-import { PlusIcon, StarIcon } from "lucide-react";
+import { PlusIcon, StarIcon, CopyIcon } from "lucide-react";
 
 interface SimpleCategory {
   id: string;
@@ -28,6 +28,7 @@ interface SimpleItemChipGridProps {
   categories?: SimpleCategory[];
   onAdd: () => void;
   onEdit: (item: SimpleItem) => void;
+  onCopyFromClass?: () => void;
   readOnly?: boolean;
 }
 
@@ -38,6 +39,7 @@ export function SimpleItemChipGrid({
   categories,
   onAdd,
   onEdit,
+  onCopyFromClass,
   readOnly = false,
 }: SimpleItemChipGridProps) {
   const t = useTranslations("loadouts");
@@ -92,10 +94,28 @@ export function SimpleItemChipGrid({
           {title}
         </h3>
         {!readOnly && (
-          <Button variant="outline" size="xs" onClick={onAdd}>
-            <PlusIcon data-icon="inline-start" />
-            {tc("add")}
-          </Button>
+          <>
+            <Button
+              variant="outline"
+              size="xs"
+              onClick={onAdd}
+              aria-label={tc("add")}
+            >
+              <PlusIcon data-icon="inline-start" />
+              <span className="hidden sm:inline">{tc("add")}</span>
+            </Button>
+            {onCopyFromClass && (
+              <Button
+                variant="outline"
+                size="xs"
+                onClick={onCopyFromClass}
+                aria-label={t("copyFromClass")}
+              >
+                <CopyIcon data-icon="inline-start" />
+                <span className="hidden sm:inline">{t("copyFromClass")}</span>
+              </Button>
+            )}
+          </>
         )}
       </div>
 
