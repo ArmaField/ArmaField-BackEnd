@@ -2,7 +2,7 @@ export const openApiSpec = {
   openapi: "3.0.3",
   info: {
     title: "ARMAFIELD Backend API",
-    version: "1.0.0",
+    version: "1.0.1",
     description:
       "Game backend API for the ARMAFIELD mod for Arma Reforger. Handles player management, loadout customization, and game server integration.",
     contact: {
@@ -392,7 +392,7 @@ export const openApiSpec = {
         tags: ["Stats"],
         summary: "Combat stats batch update",
         description:
-          "Accepts an array of player combat deltas. Increments kills/deaths on each player by the provided values. Called every ~60s by the game server and on round end / shutdown. Players not found in DB are silently skipped.",
+          "Accepts an array of player combat deltas. Increments kills/deaths/assists on each player by the provided values. Called every ~60s by the game server and on round end / shutdown. Players not found in DB are silently skipped.",
         requestBody: {
           required: true,
           content: {
@@ -406,12 +406,13 @@ export const openApiSpec = {
                     uid: { type: "string" },
                     kills: { type: "integer", minimum: 0 },
                     deaths: { type: "integer", minimum: 0 },
+                    assists: { type: "integer", minimum: 0, description: "Optional. Defaults to 0 if omitted." },
                   },
                 },
               },
               example: [
-                { uid: "84968975-9c1c-4774-bfbb-e8d32a9ceff0", kills: 3, deaths: 1 },
-                { uid: "11111111-2222-3333-4444-555555555555", kills: 5, deaths: 2 },
+                { uid: "84968975-9c1c-4774-bfbb-e8d32a9ceff0", kills: 3, deaths: 1, assists: 2 },
+                { uid: "11111111-2222-3333-4444-555555555555", kills: 5, deaths: 2, assists: 4 },
               ],
             },
           },

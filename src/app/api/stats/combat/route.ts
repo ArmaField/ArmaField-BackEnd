@@ -10,12 +10,13 @@ const StatsSchema = z.array(
     uid: z.string().min(1),
     kills: z.number().int().min(0),
     deaths: z.number().int().min(0),
+    assists: z.number().int().min(0).default(0),
   })
 );
 
 /**
  * POST /api/stats
- * Accepts an array of player stats deltas (uid, kills, deaths).
+ * Accepts an array of player stats deltas (uid, kills, deaths, assists).
  * Increments existing values on each player. Players not found are skipped.
  * Called every ~60s by the game server and on round end / shutdown.
  */
@@ -53,6 +54,7 @@ export const POST = withGameAuth(async (request: NextRequest) => {
         data: {
           kills: { increment: d.kills },
           deaths: { increment: d.deaths },
+          assists: { increment: d.assists },
         },
       })
     )
