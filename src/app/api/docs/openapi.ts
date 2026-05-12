@@ -2,7 +2,7 @@ export const openApiSpec = {
   openapi: "3.0.3",
   info: {
     title: "ARMAFIELD Backend API",
-    version: "1.0.1",
+    version: "1.0.2",
     description:
       "Game backend API for the ARMAFIELD mod for Arma Reforger. Handles player management, loadout customization, and game server integration.",
     contact: {
@@ -581,6 +581,32 @@ export const openApiSpec = {
           "404": {
             description: "Not found. Code: `player_not_found`",
             content: { "application/json": { example: { error: "player_not_found" } } },
+          },
+        },
+      },
+    },
+    "/api/ping": {
+      get: {
+        tags: ["System"],
+        summary: "Game server handshake",
+        description:
+          "Lightweight handshake the game server calls on startup. A `200 { ok: true }` response means the backend is reachable AND the configured Bearer token is valid (server is registered and active). Any other status (401 / 503 / 404 / network error) should be treated as 'backend not available or not configured' - the game server doesn't need to parse the body in error cases.",
+        responses: {
+          "200": {
+            description: "Backend is up and token is valid",
+            content: {
+              "application/json": {
+                example: { ok: true },
+              },
+            },
+          },
+          "401": {
+            description: "Invalid or missing Bearer token",
+            content: {
+              "application/json": {
+                schema: { $ref: "#/components/schemas/Error" },
+              },
+            },
           },
         },
       },
